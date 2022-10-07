@@ -27,30 +27,33 @@ class RasterData:
 
 
 def plot_over_line(raster_data: RasterData,
-                   p0: Point,
-                   p1: Point,
-                   n: int = 1000) -> None:
-    current = Point(p0.x, p0.y)
-    dp = (
-        (p1.x - p0.x)/(n - 1),
-        (p1.y - p0.y)/(n - 1)
+                   lower_left: Point,
+                   upper_right: Point,
+                   number_steps: int = 1000) -> None:
+    current = Point(lower_left.x, lower_left.y)
+    stepsize = (
+        (upper_right.x - lower_left.x)/(number_steps - 1),
+        (upper_right.y - lower_left.y)/(number_steps - 1)
     )
 
     x = []
     y = []
-    for i in range(n):
-        current.x += dp[0]
-        current.y += dp[1]
+    for i in range(number_steps):
+        current.x += stepsize[0]
+        current.y += stepsize[1]
         ix = int((current.x - raster_data.p0.x)/raster_data.dx[0])
         iy = int((current.x - raster_data.p0.x)/raster_data.dx[1])
 
-        x.append(sqrt(dp[0]*dp[0]*i*i + dp[1]*dp[1]*i*i))
+        x.append(sqrt(stepsize[0]*stepsize[0]*i*i + stepsize[1]*stepsize[1]*i*i))
         if ix < 0 or ix >= raster_data.n[0] or iy < 0 or iy > raster_data.n[1]:
             y.append(nan)
         else:
             y.append(raster_data.values[ix][iy])
 
-    plot(x, y)
+    plot_function(x,y)
+
+def plot_function(x,y):
+    plot(x,y)
     show()
     close()
 
@@ -68,5 +71,5 @@ if __name__ == "__main__":
         data,
         Point(0.0, 0.0),
         Point(1.0, 1.0),
-        n=2000
+        number_steps=2000
     )
